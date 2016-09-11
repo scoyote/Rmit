@@ -1,5 +1,5 @@
 # this program requires MarkovChain_alpha.R
-
+library(diagram)
 ct <- read.csv("//Users//samuelcroker//OneDrive//SAS//RIntegration/MARKOVPREP.csv", stringsAsFactors = F)
 ct.m <- t(table(ct[,c(2,3)]))
 tr.m <- prop.table(ct.m,1)
@@ -12,7 +12,7 @@ colnames(ct.m) <- stateNames
 row.names(tr.m) <- stateNames
 colnames(tr.m) <- stateNames
 
-tr.m.l <- round(tr.m,3)
+tr.m.l <- round(tr.m,1.5)
 png(file='//Users//samuelcroker//Documents//github_repositories//Rmit//txgraph.png',width = 2000,height = 2000)
 plotmat(tr.m.l, 
         relsize=.7,
@@ -30,3 +30,35 @@ plotmat(tr.m.l,
         self.shiftx = .13,
         main = "")
 dev.off()
+
+library(igraph)
+g <- graph.adjacency(tr.m,weighted=T)
+g.df <- get.data.frame(g)
+colnames(g.df) <- list("source","target","weight")
+write.csv(g.df, file='network.csv',row.names = F)
+
+
+library(ggnet) 
+library(network) 
+library(sna)
+library(ggplot2)
+library(RColorBrewer)
+
+#tr.net <- as.network.matrix(tr.m*100, directed=T) #make network object
+tr.net = as.network.matrix(tr.m,
+              matrix.type = "adjacency",
+              directed=T,
+              loops=T,
+              names.eval = "weights")
+
+  ggnet2(tr.net, label=T),edge.size = "weights")
+  
+  
+         node.size = 12, node.color = "depth", 
+         color.palette = "Set2", color.legend = "Water Depth", 
+         edge.size = 1, edge.color = "black",
+         arrow.size = 1,  arrow.gap = 0.027, 
+         legend.size=20)  + 
+  guides(color=guide_legend(keyheight=0.5,default.unit="inch",
+                            override.aes = list(size=6)))
+
