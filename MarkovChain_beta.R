@@ -12,11 +12,14 @@ colnames(ct.m) <- stateNames
 row.names(tr.m) <- stateNames
 colnames(tr.m) <- stateNames
 
-tr.m.l <- round(tr.m,1.5)
-png(file='//Users//samuelcroker//Documents//github_repositories//Rmit//txgraph.png',width = 2000,height = 2000)
-plotmat(tr.m.l, 
+tr.m.l <- round(tr.m,2)
+
+pl.m <- tr.m
+pl.m[c(1,3,5,7,9,11),c(1,3,5,7,9,11)] <- 0
+png(file='txgraph.png',width = 2000,height = 2000)
+plotmat(pl.m, 
         relsize=.7,
-        pos=c(1,3,4,3,1),
+        #pos=c(1,3,4,3,1),
         lwd = 0.5, box.lwd = 2, 
         cex.txt = 0.8, 
         box.size = 0.1, 
@@ -44,14 +47,30 @@ library(sna)
 library(ggplot2)
 library(RColorBrewer)
 
+pl.m <- tr.m
+pl.m[c(1,3,5,7,9,11),c(1,3,5,7,9,11)] <- 0
+
 #tr.net <- as.network.matrix(tr.m*100, directed=T) #make network object
-tr.net = as.network.matrix(tr.m,
+tr.net = network(pl.m*100,
               matrix.type = "adjacency",
               directed=T,
-              loops=T,
-              names.eval = "weights")
-
-  ggnet2(tr.net, label=T),edge.size = "weights")
+              loops=F,
+              names.eval = "weights",
+              ignore.eval = F)
+#fruchtermanreingold
+#set.edge.attribute(tr.net, "color", ifelse(tr.net %e% "weights" > 2, "grey75", "black"))
+  
+ggnet2(tr.net,
+         mode = "circle",
+         label=T,
+         size = 'degree',
+         arrow.gap = .1,
+         edge.size = "weights",
+         node.color = ifelse(substr(network.vertex.names(tr.net),6,6) == 'Y', "red", "grey75"),
+         edge.color = ifelse(tr.net %e% "weights" > 1, "grey75", "red"),
+         arrow.size = 12
+         )
+ggnet2()
   
   
          node.size = 12, node.color = "depth", 
