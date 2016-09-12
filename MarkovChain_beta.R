@@ -41,14 +41,12 @@ colnames(g.df) <- list("source","target","weight")
 write.csv(g.df, file='network.csv',row.names = F)
 
 
-library(ggnet) 
+library(GGally) 
 library(network) 
 library(sna)
 library(ggplot2)
 library(RColorBrewer)
 
-pl.m <- tr.m
-pl.m[c(1,3,5,7,9,11),c(1,3,5,7,9,11)] <- 0
 
 #tr.net <- as.network.matrix(tr.m*100, directed=T) #make network object
 tr.net = network(pl.m*100,
@@ -70,14 +68,7 @@ ggnet2(tr.net,
          edge.color = ifelse(tr.net %e% "weights" > 1, "grey75", "red"),
          arrow.size = 12
          )
-ggnet2()
+
   
-  
-         node.size = 12, node.color = "depth", 
-         color.palette = "Set2", color.legend = "Water Depth", 
-         edge.size = 1, edge.color = "black",
-         arrow.size = 1,  arrow.gap = 0.027, 
-         legend.size=20)  + 
-  guides(color=guide_legend(keyheight=0.5,default.unit="inch",
-                            override.aes = list(size=6)))
+
 
